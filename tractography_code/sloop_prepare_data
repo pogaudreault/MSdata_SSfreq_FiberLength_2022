@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+source=$1
+destination=$2
+
+
+tid="01"
+for subject in ${source}/Somana_*; do
+
+    if [ ! -f ${destination}/${sid}/${tid}/t1w.nii.gz ]; then
+
+        printf "Processing ${subject}\n"
+        sname=$(basename ${subject})
+        sid=${sname:7:5}
+        mkdir -p ${destination}/${sid}/${tid}
+
+        t1w=${subject}/03-MPRAGE
+        mrconvert ${t1w} ${destination}/${sid}/${tid}/t1w.nii.gz --stride 1,2,3
+
+        dwi=${subject}/04-DTI
+        mrconvert ${dwi} ${destination}/${sid}/${tid}/dwi.nii.gz \
+            --stride 1,2,3,4 \
+            --export_grad_fsl ${destination}/${sid}/${tid}/bvecs ${destination}/${sid}/${tid}/bvals
+    fi
+done

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+source=$1
+
+for cohort in ${source}/*; do
+    cname=$(basename ${cohort})
+    for subject in ${cohort}/*; do
+        sname=$(basename ${subject})
+        for trial in ${subject}/*; do
+            tname=$(basename ${trial})
+
+            echo ${trial}
+
+            python3 ~/research/scilpy/scripts/scil_convert_freesurfer_labels_mgz_to_nii.py \
+                ~/research/projects/sloop/derivatives/freesurfer/${sname}/mri/aparc+aseg.mgz \
+                ~/research/projects/sloop/derivatives/preprocess/${cname}/${sname}/${tname}/t1w.registered.nii.gz \
+                ~/research/projects/sloop/derivatives/preprocess/${cname}/${sname}/${tname}/aparc+aseg.registered.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                49 \
+                ${trial}/t1w.registered.thalamus.right.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                10 \
+                ${trial}/t1w.registered.thalamus.left.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                1028 \
+                ${trial}/t1w.registered.superior-frontal.left.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                2028 \
+                ${trial}/t1w.registered.superior-frontal.right.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                1027 \
+                ${trial}/t1w.registered.rostral-middle-frontal.left.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                2027 \
+                ${trial}/t1w.registered.rostral-middle-frontal.right.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                2003 \
+                ${trial}/t1w.registered.caudal-middle-frontal.right.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                1003 \
+                ${trial}/t1w.registered.caudal-middle-frontal.left.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                1002 \
+                ${trial}/t1w.registered.caudal-anterior-cingulate.left.mask.nii.gz
+
+            ./sloop_mask_from_image \
+                ${trial}/aparc+aseg.registered.nii.gz \
+                2002 \
+                ${trial}/t1w.registered.caudal-anterior-cingulate.right.mask.nii.gz
+        done
+    done
+done

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import argparse
+import nibabel
+import numpy
+
+def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('operator', type=str)
+    parser.add_argument('left', type=str)
+    parser.add_argument('right', type=str)
+    parser.add_argument('output', type=str)
+    args = parser.parse_args()
+
+    img = nibabel.load(args.left)
+    left = img.get_data()
+    img = nibabel.load(args.right)
+    right = img.get_data()
+
+    if args.operator == 'union':
+        new_data = left + right - left * right
+    else:
+        raise ValueError('Unknown operator.')
+
+    new_img = nibabel.Nifti1Image(new_data, img.get_affine())
+    nibabel.save(new_img, args.output)
+
+
+if __name__ == '__main__':
+    main()
